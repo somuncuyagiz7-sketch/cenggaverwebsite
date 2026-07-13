@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CENGAVER ROVER - FOTOĞRAFLAR</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        /* ============================== */
+        /* 🎨 GLOBAL VE ARKA PLAN STİLLERİ */
+        /* ============================== */
+        * {
+            text-decoration: none;
+            padding: 0;
+            margin: 0;
+            font-family: monospace;
+            box-sizing: border-box;
+        }
+
+        body {
+            width: 100%;
+            min-height: 100vh;
+            overflow-x: hidden;
+            overflow-y: auto;
+            background-color: hsl(252, 65%, 5%);
+            background-image: radial-gradient(circle at top right, rgba(121, 68, 154, 0.2), transparent),
+                              radial-gradient(circle at 20% 80%, rgba(41, 196, 255, 0.2), transparent);
+            background-attachment: fixed;
+            color: #f0f0f0;
+        }
+
+        /* YILDIZ EFEKTLERİ */
+        #universe {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+        }
+        .star0, .star1, .star2, .star3 { position: fixed; background-color: white; opacity: 1; }
+        .star0 { height: 1px; width: 1px; }
+        .star1 { height: 2px; width: 2px; border-radius: 50%; }
+        .star2 { height: 3px; width: 3px; border-radius: 50%; }
+        .star3 { height: 4px; width: 4px; border-radius: 50%; }
+
+        /* ============================== */
+        /* 🧭 NAVİGASYON (MENÜ) STİLLERİ */
+        /* ============================== */
+       ul.navbar { list-style: none; background-color: orange; display: flex; justify-content: center; align-items: center; padding: 0 20px; position: sticky; top: 0; z-index: 1002; flex-wrap: wrap; height: auto;}
+    ul.navbar li { display: inline-block; position: relative; }
+    ul.navbar li a { display: block; padding: 20px 25px; color: aliceblue; text-decoration: none; text-align: center; font-size: 20px; }
+    ul.navbar li ul.dropdown { top: 100%; background: orange; position: absolute; z-index: 1000; display: none; left: 0; min-width: 250px; }
+    ul.navbar li a:hover { background: orangered; }
+    ul.navbar li:hover ul.dropdown { display: block; }
+    .logo-container { margin-left: auto; }
+    .logo-wrapper { display: flex; align-items: center; gap: 10px; }
+    .logo { height: 50px; width: 70px; }
+    .logo-text { color: white; font-size: 24px; font-weight: bold; font-family: monospace; }
+    
+        /* ANA BAŞLIK */
+        .basbaslik {
+            position: relative;
+            text-align: center;
+            padding: 50px 0 40px 0;
+            color: #ffffff;
+            font-size: 48px;
+            font-weight: bold;
+            z-index: 10;
+            font-family: monospace;
+        }
+        
+    
+        .galeri-konteyner {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto 50px auto;
+            padding: 20px;
+            border-radius: 15px;
+            background: rgba(255, 255, 255, 0.08); 
+            backdrop-filter: blur(8px); 
+            -webkit-backdrop-filter: blur(8px);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2); 
+            border: 1px solid rgba(255, 255, 255, 0.15); 
+            z-index: 10;
+            position: relative;
+            
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); 
+            display: grid; 
+            gap: 25px;
+        }
+
+        .galeri-item {
+            position: relative;
+            overflow: hidden;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .galeri-item:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 8px 25px rgba(41, 196, 255, 0.3);
+        }
+
+        .galeri-item img {
+            width: 100%;
+            height: 180px; 
+            object-fit: cover; 
+            display: block;
+            transition: transform 0.5s ease;
+        }
+
+        .galeri-item:hover img {
+            transform: scale(1.05); 
+        }
+
+        .galeri-caption {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            color: white;
+            padding: 10px 15px;
+            font-size: 0.9em;
+            text-align: center;
+            transform: translateY(100%); 
+            transition: transform 0.3s ease;
+        }
+
+        .galeri-item:hover .galeri-caption {
+            transform: translateY(0); 
+        }
+
+     
+        .lightbox {
+            display: none; 
+            position: fixed;
+            z-index: 2000; 
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: rgba(0, 0, 0, 0.9);
+            
+            display: flex; 
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.3s;
+        }
+        
+        
+        .lightbox-content-wrapper {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%; 
+            height: 100%;
+            margin: auto;
+        }
+
+        .lightbox-content {
+            display: block;
+            
+            max-width: 80vw; 
+            max-height: 80vh; 
+            width: auto;
+            height: auto;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(41, 196, 255, 0.5); 
+            transition: opacity 0.3s ease;
+        }
+        
+      
+        .prev-btn, .next-btn {
+            cursor: pointer;
+            position: absolute;
+            top: 50%;
+            width: auto;
+            padding: 16px;
+            margin-top: -30px;
+            color: white;
+            font-weight: bold;
+            font-size: 40px;
+            transition: 0.6s ease;
+            border-radius: 0 3px 3px 0;
+            user-select: none;
+            background-color: rgba(0, 0, 0, 0.3);
+            z-index: 2001;
+        }
+
+        .next-btn {
+            right: 0;
+            border-radius: 3px 0 0 3px;
+        }
+
+        .prev-btn {
+            left: 0;
+            border-radius: 0 3px 3px 0;
+        }
+
+        .prev-btn:hover, .next-btn:hover {
+            background-color: rgba(255, 140, 0, 0.8);
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 35px;
+            color: #fff;
+            font-size: 40px;
+            font-weight: bold;
+            transition: 0.3s;
+            cursor: pointer;
+            z-index: 2002;
+        }
+        @media (max-width: 1050px) {
+    .team-page-container { max-width: 90%; margin-top: 30px; }
+    .about-block { flex-direction: column  !important; text-align: center;  }
+    .about-block .text { padding: 20px; max-width: 100%; }
+    
+    /* Takım kartlarını biraz küçültelim */
+    .member-grid { grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); }
+}
+
+/* 2. Telefonlar (768px altı) */
+.hamburger {
+      display: flex;
+      font-size: 26px;
+      color: white;
+      cursor: pointer;
+      padding-left: 290px;
+    }
+
+    .ikonlar {
+      position: absolute;
+      top: 75px;
+      right: 20px;
+      display: flex;
+      gap: 20px;
+      z-index: 1001;
+    }
+
+    .ikonlar a { font-size: 50px; color: aliceblue; }
+    .ikonlar a:hover { color: orange; }
+    .hamburger {
+    display: none !important;
+}
+
+     @media (max-width: 768px) {
+    /* 1. Navbar Düzenlemesi: Logo ve Hamburger yan yana */
+    ul.navbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 15px;
+        height: 70px;
+    }
+
+    .logo-container {
+        margin: 0;
+        width: auto;
+        order: 0;
+    }
+
+    .logo-wrapper {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    /* Hamburger Menü Butonu */
+    .hamburger {
+        display: block !important;
+        font-size: 24px;
+        color: white;
+        cursor: pointer;
+        padding: 10px;
+        order: 2; /* En sağa atar */
+    }
+
+    /* Menü Kapalıyken Linkleri Gizle */
+    ul.navbar li:not(.logo-container) {
+        display: none;
+        width: 100%;
+        text-align: center;
+        background: orange;
+    }
+
+    /* Menü Açıkken Linkleri Göster */
+    ul.navbar.open {
+        height: auto;
+    }
+
+    ul.navbar.open li:not(.logo-container) {
+        display: block;
+    }
+
+    /* 2. Sosyal Medya İkonları: Yazının üstünden kaldırıp logonun altına alıyoruz */
+    .ikonlar {
+        position: absolute !important;
+        top: 100px;     /* Haribo ile aynı hizada ama sağda */
+        right: 15px !important; /* Ekranın sağ kenarına 15px mesafe bırakır */
+        left: auto !important;  /* Sol taraftan gelen tüm değerleri iptal eder */
+        display: flex !important;
+        flex-direction: row;    /* Yan yana dizilmelerini sağlar */
+        gap: 15px;      /* Aralarındaki boşluk */
+        width: auto !important; /* Genişliği içeriği kadar yapar, ekranı kaplamaz */
+      
+    }
+
+    .ikonlar a {
+        font-size: 35px; /* Mobilde biraz küçülttük */
+      
+    }
+
+    /* 3. Hero Bölümü ve Metinler */
+    .hero-section {
+        min-height: auto !important;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    .baslik {
+        position: relative !important;
+        top: 0 !important;
+        left: 0 !important;
+        transform: none !important;
+        font-size: 26px;
+        margin-top: 20px;
+        width: 100%;
+    }
+
+    .aciklama {
+        position: relative !important;
+        top: 0 !important;
+        left: 0 !important;
+        transform: none !important;
+        width: 100% !important;
+        margin: 15px auto !important;
+        font-size: 15px;
+        padding: 0 10px;
+    }
+
+    /* Haribo (Logonun yanındaki süs) mobilde gizle veya küçült */
+  .haribo{
+      height: auto;
+      width: 125px;
+      left: 30px;
+  }
+
+    
+    /* Logo Mobilde En Üste Veya En Alta Gelsin */
+    .logo-container { 
+        margin: 10px 0; 
+        order: -1; /* Logoyu menünün en üstüne taşır */
+        width: 100%;
+        display: flex;
+        justify-content: center;
+    }
+  .logo-text {
+    color: white;
+    font-size: 20px; /* Mobilde sığması için 24px'den 20'ye çektik */
+    font-weight: bold;
+    font-family: monospace;
+    white-space: nowrap; /* Yazının asla alt satıra geçmemesini sağlar */
+}
+.logo-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    flex-wrap: nowrap; /* Elemanları tek satıra zorlar */
+    justify-content: flex-start;
+}
+
+    /* Başlıklar Mobilde Ekrana Sığsın */
+    h1 { font-size: 24px; letter-spacing: 2px; margin-bottom: 30px; }
+    h2 { font-size: 20px; }
+
+    /* Takım Üyeleri Mobilde 2'li Yan Yana Dursun */
+    .member-grid { 
+        grid-template-columns: 1fr 1fr; 
+        gap: 15px; 
+    }
+
+    .member-card img { width: 70px; height: 70px; }
+    .member-card h4 { font-size: 14px; }
+
+    /* Timeline (Zaman Çizelgesi) Varsa Mobilde Düz Çizgiye Dönüştürür */
+    .timeline-container::after { left: 20px; } 
+    .timeline-item { width: 100%; padding-left: 50px; padding-right: 10px; left: 0 !important; }
+    
+    /* Ekran dışına taşmayı önlemek için */
+    body { overflow-x: hidden; }
+    
+}
+       
+    </style>
+</head>
+<body>
+  <ul class="navbar">
+    <li><a href="index.html">ANASAYFA</a></li>
+    <li><a href="duyurular.html">DUYURULAR</a></li>
+    
+    <li><a href="sponsorlar.html">SPONSORLAR</a>
+    <li><a href="#">YARIŞMALAR</a><ul class="dropdown"><li><a href="https://roverchallenge.eu/" target="_blank">EUROPEAN ROVER</a></li><li><a href="https://www.anatolianrover.space/" target="_blank">ANATOLIAN ROVER</a></li><li><a href="https://www.teknofest.org/tr/" target="_blank">TEKNOFEST</a></li></ul></li>
+    <li><a href="takımımız.html">TAKIMIMIZ</a></li>
+    <li><a href="#">HAKKIMIZDA</a><ul class="dropdown"><li><a href="bizeulas.html">BİZE ULAŞIN</a></li><li><a href="fotograflar.html">FOTOĞRAFLAR</a></li></ul></li>
+    <li class="logo-container"><div class="logo-wrapper"><img src="logo.png" alt="Logo" class="logo"><span class="logo-text">CENGAVER ROVER</span><div class="hamburger"> <i class="fa-solid fa-bars"></i></div></div></li>
+
+
+  </ul>
+    <div class="basbaslik">ROVER GALERİSİ VE ANILAR</div>
+
+    <div class="galeri-konteyner">
+
+        <div class="galeri-item" onclick="openLightbox(0)"><img src="foto2.png" alt="Montaj 1" data-caption="Yönetim Ekibi" data-src="foto2.png"><div class="galeri-caption">Yönetim Ekibi</div></div>
+        <div class="galeri-item" onclick="openLightbox(1)"><img src="foto3.png" alt="Yazılım 2" data-caption="Rektörümüzle" data-src="foto3.png"><div class="galeri-caption">Rektörümüzle</div></div>
+        <div class="galeri-item" onclick="openLightbox(2)"><img src="foto_yarış_3.jpg" alt="Yarış 3" data-caption="Anatolian Rover Challenge 2024" data-src="foto_yarış_3.jpg"><div class="galeri-caption">Yarışma Alanı</div></div>
+        <div class="galeri-item" onclick="openLightbox(3)"><img src="foto_ekip_4.jpg" alt="Ekip 4" data-caption="Tüm Ekip Hatıra Fotoğrafı" data-src="foto_ekip_4.jpg"><div class="galeri-caption">Ekip Fotoğrafı</div></div>
+
+        <div class="galeri-item" onclick="openLightbox(4)"><img src="foto_detay_5.jpg" alt="Detay 5" data-caption="Elektronik Kart Detayı" data-src="foto_detay_5.jpg"><div class="galeri-caption">Elektronik Kart</div></div>
+        <div class="galeri-item" onclick="openLightbox(5)"><img src="foto_sponsor_6.jpg" alt="Sponsor 6" data-caption="Sponsor Ziyareti" data-src="foto_sponsor_6.jpg"><div class="galeri-caption">Sponsor Ziyareti</div></div>
+        
+        <div class="galeri-item" onclick="openLightbox(6)"><img src="foto_detay_7.jpg" alt="Detay 7" data-caption="Kol Detay Tasarımı" data-src="foto_detay_7.jpg"><div class="galeri-caption">Kol Detayı</div></div>
+        <div class="galeri-item" onclick="openLightbox(7)"><img src="foto_gece_8.jpg" alt="Gece 8" data-caption="Atölyede Gece Çalışması" data-src="foto_gece_8.jpg"><div class="galeri-caption">Gece Çalışması</div></div>
+        <div class="galeri-item" onclick="openLightbox(8)"><img src="foto_test_9.jpg" alt="Test 9" data-caption="Arazi Testleri Başlangıcı" data-src="foto_test_9.jpg"><div class="galeri-caption">Arazi Testleri</div></div>
+        <div class="galeri-item" onclick="openLightbox(9)"><img src="foto_sunum_10.jpg" alt="Sunum 10" data-caption="Sponsorlara Proje Sunumu" data-src="foto_sunum_10.jpg"><div class="galeri-caption">Proje Sunumu</div></div>
+        <div class="galeri-item" onclick="openLightbox(10)"><img src="foto_elektronik_11.jpg" alt="Elek 11" data-caption="Elektronik Ekip Çalışıyor" data-src="foto_elektronik_11.jpg"><div class="galeri-caption">Elektronik Ekip</div></div>
+        <div class="galeri-item" onclick="openLightbox(11)"><img src="foto_mekanik_12.jpg" alt="Mek 12" data-caption="Mekanik İmalat Aşaması" data-src="foto_mekanik_12.jpg"><div class="galeri-caption">Mekanik İmalat</div></div>
+
+    </div>
+    
+    <div id="myLightbox" class="lightbox" onclick="closeLightbox(event)">
+        <span class="close-btn">&times;</span>
+        
+        <div class="lightbox-content-wrapper">
+            <a class="prev-btn" onclick="plusSlides(-1, event)">&#10094;</a>
+            
+            <img class="lightbox-content" id="lightboxImg">
+            <div id="lightboxCaption" class="lightbox-caption"></div>
+            
+            <a class="next-btn" onclick="plusSlides(1, event)">&#10095;</a>
+        </div>
+    </div>
+    
+    <div id="universe"></div>
+
+    <script>
+        let slideIndex = 0;
+        let slides = [];
+
+        
+        document.addEventListener('DOMContentLoaded', (event) => {
+            const items = document.querySelectorAll('.galeri-item img');
+            items.forEach(img => {
+               
+                if (img.hasAttribute('data-src') && img.hasAttribute('data-caption')) {
+                    slides.push({
+                        src: img.getAttribute('data-src'),
+                        caption: img.getAttribute('data-caption')
+                    });
+                }
+            });
+        });
+
+        function openLightbox(n) {
+            if (slides.length === 0) return; 
+            
+            slideIndex = n;
+            const lightbox = document.getElementById('myLightbox');
+            lightbox.style.display = "flex";
+            showSlides(slideIndex);
+
+           
+            document.onkeydown = function(evt) {
+                evt = evt || window.event;
+                if (evt.key === 'ArrowLeft') {
+                    plusSlides(-1, evt);
+                } else if (evt.key === 'ArrowRight') {
+                    plusSlides(1, evt);
+                } else if (evt.key === 'Escape') {
+                    closeLightbox();
+                }
+            };
+        }
+
+        function plusSlides(n, event) {
+            if (event) event.stopPropagation();
+            
+            slideIndex += n;
+            if (slideIndex >= slides.length) {
+                slideIndex = 0;
+            }
+            if (slideIndex < 0) {
+                slideIndex = slides.length - 1;
+            }
+            showSlides(slideIndex);
+        }
+
+        function showSlides(n) {
+            const lightboxImg = document.getElementById('lightboxImg');
+            const lightboxCaption = document.getElementById('lightboxCaption');
+            
+            const currentSlide = slides[n];
+            
+            
+            lightboxImg.style.opacity = '0'; 
+            
+         
+            setTimeout(() => {
+                lightboxImg.src = currentSlide.src;
+                lightboxCaption.innerHTML = currentSlide.caption;
+                lightboxImg.style.opacity = '1';
+            }, 300); 
+        }
+
+        function closeLightbox(event) {
+            const lightbox = document.getElementById('myLightbox');
+            
+           
+            if (event && (event.target.className === 'prev-btn' || event.target.className === 'next-btn')) {
+                event.stopPropagation();
+                return;
+            }
+            
+           
+            if (!event || event.target === lightbox || event.target.className === 'close-btn' || event.key === 'Escape') {
+                lightbox.style.display = "none";
+                document.onkeydown = null; 
+            }
+        }
+    </script>
+    <script>
+       
+        var layerCount = 20;
+        var starCount = 200;
+        var maxTime = 15;
+        var universe = document.getElementById("universe");
+        var w = window;
+        var d = document;
+        var e = d.documentElement;
+        var g = d.getElementsByTagName("body")[0];
+        var width = w.innerWidth || e.clientWidth || g.clientWidth;
+        var height = w.innerHeight || e.clientHeight || g.clientHeight;
+
+        for (var i = 0; i < starCount; ++i) {
+            var ypos = Math.round(Math.random() * height);
+            var star = document.createElement("div");
+            var speed = 5000 * (Math.random() * maxTime + 1);
+            star.setAttribute("class", "star" + (3 - Math.floor(speed / 1000 / 8)));
+            star.style.backgroundColor = "white";
+
+            universe.appendChild(star);
+            star.animate(
+                [
+                    { transform: "translate3d(" + width + "px, " + ypos + "px, 0)" },
+                    { transform: "translate3d(-" + Math.random() * 256 + "px, " + ypos + "px, 0)" }
+                ],
+                {
+                    delay: Math.random() * -speed,
+                    duration: speed,
+                    iterations: 1000
+                }
+            );
+        }
+          const hamburger = document.querySelector('.hamburger');
+  const navbar = document.querySelector('.navbar');
+
+  hamburger.addEventListener('click', () => {
+    navbar.classList.toggle('open');
+  });
+    </script>
+</body>
+</html>

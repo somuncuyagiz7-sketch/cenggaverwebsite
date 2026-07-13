@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CENGAVER ROVER - DUYURULAR</title>
+    <style>
+        /* ============================== */
+        /* 🎨 GLOBAL VE ARKA PLAN STİLLERİ */
+        /* ============================== */
+        * {
+            text-decoration: none;
+            padding: 0;
+            margin: 0;
+            font-family: monospace;
+            box-sizing: border-box;
+        }
+
+        body {
+            width: 100%;
+            height: 100vh;
+            overflow-x: hidden;
+            overflow-y: auto;
+            background-color: hsl(252, 65%, 5%);
+            /* Uzay temalı gradient arka plan */
+            background-image: radial-gradient(circle at top right, rgba(121, 68, 154, 0.2), transparent),
+                              radial-gradient(circle at 20% 80%, rgba(41, 196, 255, 0.2), transparent);
+            background-attachment: fixed;
+            color: #f0f0f0;
+        }
+
+        /* YILDIZ EFEKTLERİ */
+        #universe {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+        }
+        .star0, .star1, .star2, .star3 { position: fixed; background-color: white; opacity: 1; }
+        .star0 { height: 1px; width: 1px; }
+        .star1 { height: 2px; width: 2px; border-radius: 50%; }
+        .star2 { height: 3px; width: 3px; border-radius: 50%; }
+        .star3 { height: 4px; width: 4px; border-radius: 50%; }
+
+        /* ============================== */
+        /* 🧭 NAVİGASYON (MENÜ) STİLLERİ */
+        /* ============================== */
+        ul.navbar { list-style: none; background-color: orange; display: flex; justify-content: center; align-items: center; padding: 0 20px; position: sticky; top: 0; z-index: 1002; flex-wrap: wrap; height: auto;}
+    ul.navbar li { display: inline-block; position: relative; }
+    ul.navbar li a { display: block; padding: 20px 25px; color: aliceblue; text-decoration: none; text-align: center; font-size: 20px; }
+    ul.navbar li ul.dropdown { top: 100%; background: orange; position: absolute; z-index: 1000; display: none; left: 0; min-width: 250px; }
+    ul.navbar li a:hover { background: orangered; }
+    ul.navbar li:hover ul.dropdown { display: block; }
+    .logo-container { margin-left: auto; }
+    .logo-wrapper { display: flex; align-items: center; gap: 10px; }
+    .logo { height: 50px; width: 70px; }
+    .logo-text { color: white; font-size: 24px; font-weight: bold; font-family: monospace; }
+    
+
+        /* ANA BAŞLIK */
+        .basbaslik {
+            position: relative;
+            text-align: center;
+            padding: 50px 0 20px 0;
+            color: #ffffff;
+            font-size: 48px;
+            font-weight: bold;
+            z-index: 10;
+        }
+        
+        /* ============================== */
+        /* 📢 DUYURU PANELİ (ACCORDION) STİLLERİ */
+        /* ============================== */
+        .duyuru-paneli {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            width: 90%; 
+            margin: 0 auto 50px auto; 
+            max-width: 1100px; /* MAKSİMUM GENİŞLİK */
+            z-index: 10;
+            position: relative;
+        }
+
+        .duyuru {
+            border-radius: 15px; 
+            /* Glassmorphism Efekti */
+            background: rgba(255, 255, 255, 0.08); 
+            backdrop-filter: blur(8px); 
+            -webkit-backdrop-filter: blur(8px);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2); 
+            border: 1px solid rgba(255, 255, 255, 0.15); 
+            transition: transform 0.3s ease;
+            overflow: hidden;
+        }
+
+        .duyuru:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 36px 0 rgba(41, 196, 255, 0.1);
+        }
+
+        .baslik {
+            padding: 18px 25px; 
+            background-color: rgba(255, 255, 255, 0.1); 
+            cursor: pointer;
+            color: #fff; 
+            font-weight: 600;
+            font-size: 1.1em;
+            display: flex;
+            justify-content: space-between; 
+            align-items: center;
+            transition: background-color 0.3s ease; 
+        }
+
+        .baslik:hover {
+            background-color: rgba(41, 196, 255, 0.15); 
+        }
+        
+        /* Açma/Kapama İkonu (Ok) */
+        .ok-icon {
+            margin-left: 15px;
+            transition: transform 0.4s ease;
+            font-size: 1.2em;
+            color: orange;
+        }
+
+        .baslik.acik .ok-icon {
+            transform: rotate(180deg);
+            color: orangered;
+        }
+
+        /* İçerik Kısmı */
+        .icerik {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.7s ease-in-out, padding 0.7s ease-in-out;
+            padding: 0 25px;
+            background-color: rgba(0, 0, 0, 0.15); 
+            color: #c9c9c9; 
+            line-height: 1.6;
+        }
+
+        .icerik.acik {
+            max-height: 1000px; /* İçeriğin sığabileceği büyük bir değer */
+            padding: 20px 25px 30px 25px; 
+        }
+        
+        .icerik p { margin-bottom: 10px; }
+        
+        .icerik img {
+            max-width: 100%;
+            height: auto;
+            margin-top: 15px;
+            border-radius: 10px;
+            border: 2px solid rgba(255, 140, 0, 0.5); 
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+  
+
+
+        /* ============================== */
+/* 📱 MOBİL UYUMLULUK (RESPONSIVE) */
+/* ============================== */
+.hamburger{display: none;}
+@media screen and (max-width: 768px) {
+    /* 1. Menü (Navbar) Düzenlemesi */
+    ul.navbar {
+        flex-direction: column; /* Menü elemanlarını alt alta dizer */
+        padding: 10px 0;
+        height: auto;
+    }
+    .hamburger {
+      display: flex;
+      font-size: 26px;
+      color: white;
+      cursor: pointer;
+      padding-left: 290px;
+    }
+
+    ul.navbar li {
+        width: 100%;
+        text-align: center;
+    }
+
+    ul.navbar li a {
+        padding: 12px;
+        font-size: 16px; /* Mobilde daha okunabilir yazı boyutu */
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    /* Logo Mobilde En Üstte */
+    .logo-container {
+        margin: 10px 0;
+        order: -1; 
+        width: 100%;
+        display: flex;
+        justify-content: center;
+    }
+
+    /* 2. Ana Başlık (DUYURULAR) */
+    .basbaslik {
+        font-size: 32px; /* Dev başlığı mobilde küçülttük */
+        padding: 30px 0 15px 0;
+    }
+
+    /* 3. Duyuru Paneli Genişliği */
+    .duyuru-paneli {
+        width: 95%; /* Kenarlarda çok az boşluk bırakır */
+        gap: 15px;
+    }
+
+    .baslik {
+        padding: 15px;
+        font-size: 1rem;
+    }
+
+    .icerik {
+        padding: 0 15px;
+    }
+
+    .icerik.acik {
+        padding: 15px 15px 25px 15px;
+    }
+
+    /* 4. Yıldız Animasyonu Kasma Önleme */
+    #universe {
+        opacity: 0.7;
+    }
+}
+    </style>
+</head>
+<body>
+      <ul class="navbar">
+    <li><a href="index.html">ANASAYFA</a></li>
+    <li><a href="duyurular.html">DUYURULAR</a></li>
+    
+    <li><a href="sponsorlar.html">SPONSORLAR</a>
+    <li><a href="#">YARIŞMALAR</a><ul class="dropdown"><li><a href="https://roverchallenge.eu/" target="_blank">EUROPEAN ROVER</a></li><li><a href="https://www.anatolianrover.space/" target="_blank">ANATOLIAN ROVER</a></li><li><a href="https://www.teknofest.org/tr/" target="_blank">TEKNOFEST</a></li></ul></li>
+    <li><a href="takımımız.html">TAKIMIMIZ</a></li>
+    <li><a href="#">HAKKIMIZDA</a><ul class="dropdown"><li><a href="bizeulas.html">BİZE ULAŞIN</a></li><li><a href="fotograflar.html">FOTOĞRAFLAR</a></li></ul></li>
+     <li class="logo-container">
+    <div class="logo-wrapper">
+        <img src="logo.png" alt="Logo" class="logo">
+        <span class="logo-text">CENGAVER ROVER</span>
+        <div class="hamburger"><i class="fa-solid fa-bars"></i></div>
+    </div>
+</li>
+
+
+        
+    <li class="logo-container">
+        <div class="logo-wrapper">
+            
+            
+        </div>
+    </li>
+    </ul>
+
+    <div class="basbaslik">DUYURULAR</div>
+
+    <div class="duyuru-paneli">
+        <div class="duyuru">
+            <div class="baslik" onclick="toggleDuyuru(this)">
+                <span>🚀 DUYURU1</span>
+                <span class="ok-icon">▼</span>
+            </div>
+            <div class="icerik">
+                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit.</p>
+            </div>
+        </div>
+
+        <div class="duyuru">
+            <div class="baslik" onclick="toggleDuyuru(this)">
+                <span>🎯 DUYURU2</span>
+                <span class="ok-icon">▼</span>
+            </div>
+            <div class="icerik">
+                <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Voluptatum, at.</p>
+            </div>
+        </div>
+        
+        <div class="duyuru">
+            <div class="baslik" onclick="toggleDuyuru(this)">
+                <span>🎯 DUYURU3</span>
+                <span class="ok-icon">▼</span>
+            </div>
+            <div class="icerik">
+                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Consequatur fugit, sed eum inventore excepturi exercitationem, minus laborum libero et quas sint maiores, commodi ipsam perferendis blanditiis impedit optio totam asperiores!</p>
+            </div>
+        </div>
+
+        <div class="duyuru">
+            <div class="baslik" onclick="toggleDuyuru(this)">
+                <span>🎯 DUYURU4</span> 
+                <span class="ok-icon">▼</span>
+            </div>
+            <div class="icerik">
+                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sint omnis consectetur vero. Illum saepe corrupti itaque sint, aut non velit! 
+                <img src="foto1.png" alt="Duyuru Fotoğrafı"></p>
+            </div>
+        </div>
+    </div>
+    
+
+    <div id="universe"></div>
+
+    <script>
+        function toggleDuyuru(baslikEl) {
+            const icerik = baslikEl.nextElementSibling;
+            const duyuruPaneli = baslikEl.closest('.duyuru-paneli');
+            
+            // Eğer açılacaksa (yani "acik" class'ı yoksa), diğer açık duyuruları kapat
+            if (!icerik.classList.contains("acik")) {
+                duyuruPaneli.querySelectorAll(".icerik.acik").forEach(acikIcerik => {
+                    acikIcerik.classList.remove("acik");
+                    acikIcerik.previousElementSibling.classList.remove("acik"); // İlgili başlığın da class'ını kaldır
+                });
+            }
+
+            // Tıklanan duyuruyu aç/kapat
+            icerik.classList.toggle("acik");
+            baslikEl.classList.toggle("acik"); // Ok döndürme için class ekleniyor
+        }
+    </script>
+    <script>
+        // YILDIZ EFEKTLERİ JS KODU (Animasyon)
+        var layerCount = 20;
+        var starCount = 200;
+        var maxTime = 15;
+        var universe = document.getElementById("universe");
+        var w = window;
+        var d = document;
+        var e = d.documentElement;
+        var g = d.getElementsByTagName("body")[0];
+        var width = w.innerWidth || e.clientWidth || g.clientWidth;
+        var height = w.innerHeight || e.clientHeight || g.clientHeight;
+
+        for (var i = 0; i < starCount; ++i) {
+            var ypos = Math.round(Math.random() * height);
+            var star = document.createElement("div");
+            var speed = 5000 * (Math.random() * maxTime + 1);
+            star.setAttribute("class", "star" + (3 - Math.floor(speed / 1000 / 8)));
+            star.style.backgroundColor = "white";
+
+            universe.appendChild(star);
+            star.animate(
+                [
+                    { transform: "translate3d(" + width + "px, " + ypos + "px, 0)" },
+                    { transform: "translate3d(-" + Math.random() * 256 + "px, " + ypos + "px, 0)" }
+                ],
+                {
+                    delay: Math.random() * -speed,
+                    duration: speed,
+                    iterations: 1000
+                }
+            );
+        }
+
+        const images = document.querySelectorAll('.fade-in');
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.1 });
+
+        images.forEach(img => observer.observe(img));
+    </script>
+</body>
+</html>

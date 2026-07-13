@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Cengaver Rover</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <style>
+    /* Genel Sıfırlama ve Temel Stil */
+    *, *::before, *::after { box-sizing: border-box; }
+    * { text-decoration: none; padding: 0; margin: 0; font-family: monospace; }
+
+    body {
+      width: 100%;
+      min-height: 100vh;
+      overflow-x: hidden;
+      background-color: hsl(252, 65%, 5%);
+      background-image:
+        radial-gradient(circle at top right, rgba(121, 68, 154, 0.13), transparent),
+        radial-gradient(circle at 20% 80%, rgba(41, 196, 255, 0.13), transparent);
+      background-attachment: fixed;
+      color: #ddd;
+    }
+    
+    /* Global Renkler */
+    :root { 
+        --gallery-accent: #0b84ff; 
+        --gallery-muted: rgba(255,255,255,0.06); 
+    }
+
+    /* --- MENÜ VE LOGO STİLLERİ --- */
+    ul.navbar { list-style: none; background-color: orange; display: flex; justify-content: center; align-items: center; padding: 0 20px; position: sticky; top: 0; z-index: 1002; flex-wrap: wrap; height: auto;}
+    ul.navbar li { display: inline-block; position: relative; }
+    ul.navbar li a { display: block; padding: 20px 25px; color: aliceblue; text-decoration: none; text-align: center; font-size: 20px; }
+    ul.navbar li ul.dropdown { top: 100%; background: orange; position: absolute; z-index: 1000; display: none; left: 0; min-width: 250px; }
+    ul.navbar li a:hover { background: orangered; }
+    ul.navbar li:hover ul.dropdown { display: block; }
+    .logo-container { margin-left: auto; }
+    .logo-wrapper { display: flex; align-items: center; gap: 10px; }
+    .logo { height: 50px; width: 70px; }
+    .logo-text { color: white; font-size: 24px; font-weight: bold; font-family: monospace; }
+    
+    /* İkonlar ve Haribo (Mutlak Konumda Kalabilir) */
+    .haribo { position: absolute; height: 200px; width: 280px; margin-top: 70px; margin-left: -30px; z-index: 1001; }
+    /* İkonlar div'e çevrildi ve z-index düzeltildi */
+    .ikonlar { top: 75px; right: 20px; gap: 20px; position: absolute; display: flex; z-index:1001; }
+    .ikonlar a { font-size: 50px; color: aliceblue; }
+    .ikonlar a:hover { color: orange; }
+
+    /* YILDIZ STİLLERİ (Değişmedi) */
+    .gece { position: fixed; transform: rotateZ(10deg); top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
+    .yildiz { position: absolute; left: 0; top: 50%; height: 4px; width: 100px; background: linear-gradient(-45deg, aliceblue, rgba(255,255,255,0)); border-radius: 999px; filter: drop-shadow(0 0 6px aliceblue); animation: kuyruk 20s ease-in-out infinite, dusus 20s ease-in-out infinite; }
+    @keyframes kuyruk { 0% { width: 0px; } 30% { width: 100px; } 100% { width: 0; } }
+    @keyframes dusus { 0% { transform: translateX(0); } 100% { transform: translateX(1750px); } }
+    .yildiz::before, .yildiz::after { content: ' '; position: absolute; top: calc(50% - 2px); right: 0; height: 4px; width: 30px; background: linear-gradient(-45deg, rgba(0,0,255,0), aliceblue, rgba(0,0,255,0)); border-radius: 100%; transform: translate(50%) rotateZ(45deg); animation: parlama 7s ease ease-in-out infinite; }
+    .yildiz::after { transform: translateX(50%) rotateZ(-45deg); }
+    .star0, .star1, .star2, .star3 { position: fixed; background: white; border-radius: 50%; opacity: 1; }
+    .star0 { height: 1px; width: 1px; }
+    .star1 { height: 2px; width: 2px; }
+    .star2 { height: 3px; width: 3px; }
+    .star3 { height: 4px; width: 4px; }
+
+
+    /* --- ANA İÇERİK BÖLÜMLERİ (YENİ DÜZEN) --- */
+
+    /* main min-height kaldırıldı */
+    main { 
+      position: relative; 
+      width: 100%; 
+      padding-top: 50px; 
+    }
+    
+    /* Hero Bölümü İçin Yeni Konumlandırma Kapsayıcısı */
+    .hero-section {
+        position: relative;
+        min-height: 600px; /* Görselin altında kalması için minimum yükseklik */
+        padding-top: 50px;
+        z-index: 1001; 
+    }
+
+    /* İlk Giriş Bölümü Konumlandırması Hero Section'a göre ayarlandı */
+    .baslik { position: absolute; top: 200px; left: 50%; transform: translateX(-50%); color: white; font-size: 48px; font-weight: bold; z-index: 1001; text-align: center; width: 90%; }
+    .baslikalti { font-size: 25px; margin-top: 10px; }
+    .aciklama { position: absolute; top: 350px; left: 50%; transform: translateX(-50%); width: 60%; color: #ddd; font-size: 16px; text-align: center; line-height: 1.6; z-index: 1001; min-width: 300px; }
+
+    /* Hakkımızda Bölümü (Margin kaldırıldı, akışa dahil) */
+    .about-section { 
+      display: flex; 
+      flex-direction: column; 
+      gap: 100px; 
+      padding: 50px 5%; 
+      position: relative; 
+      margin-top: 0; /* Kaldırıldı: Artık .hero-section'dan sonra başlıyor */
+      z-index: 1001; 
+      width: 100%; 
+    }
+
+    .about-block { display: flex; align-items: center; opacity: 0; transform: translateY(50px); transition: all 0.8s ease; z-index: 1001; justify-content: center; }
+    .about-block img { width: 300px; height: auto; border-radius: 10px; z-index: 1001; object-fit: cover; }
+    .about-block .text { padding: 40px; max-width: 500px; font-size: 1.1rem; color: aliceblue; font-family: monospace; z-index: 1001; }
+    .left-image { flex-direction: row; }
+    .right-image { flex-direction: row-reverse; }
+    .about-block.visible { opacity: 1; transform: translateY(0); }
+
+    /* Galeri ve Bilgi Bölümü */
+    .gallery-layout-flex { 
+      display: flex; 
+      flex-wrap: wrap; 
+      align-items: flex-start; 
+      gap: 30px; 
+      width: 100%; 
+      justify-content: center; 
+      padding: 50px 5%; /* Üstten ve alttan boşluk eklendi */
+    }
+    .gallery-column-left { flex: 3; min-width: 320px; max-width: 550px; }
+    .gallery-column-right { flex: 2; min-width: 300px; max-width: 450px; color: aliceblue; font-size: 1.4rem; line-height: 1.6; padding-top: 10px; }
+    .gallery-column-left .cengaver-gallery { justify-content: flex-start; padding: 0; width: 100%; }
+    .gallery-column-left .gallery-card { width: 100%; }
+    .gallery-column-right h1 { font-size: 28px; color: white; margin-bottom: 15px; }
+    .gallery-column-right ul { list-style: disc; background: none; display: block; padding: 0 0 0 25px; margin-top: 0; }
+    .gallery-column-right ul li { display: list-item; position: static; font-size: 1.1rem; color: aliceblue; }
+    .gallery-column-right ul li a { display: inline; padding: 0; font-size: 1.1rem; text-align: left; color: var(--gallery-accent, #0b84ff); text-decoration: underline; }
+    
+    /* Galeri Detayları (Değişmedi) */
+    .cengaver-gallery { width:100%; display:flex; justify-content:center; padding:0 12px; z-index: 1001; }
+    .gallery-card { width: min(1100px, 100%); background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border-radius: 12px; padding: 18px; box-shadow: 0 12px 36px rgba(2,8,23,0.6); position: relative; overflow: hidden; }
+    .gallery-header { text-align:center; margin-bottom:12px; }
+    .gallery-title { font-size: 22px; font-weight: 700; color: #fff; display:inline-block; padding:8px 14px; border-radius:10px; background: linear-gradient(90deg, rgba(11,132,255,0.12), rgba(255,255,255,0.02)); }
+    .gallery-main-wrap { position: relative; overflow: hidden; border-radius: 10px; width: 100%; max-width: 100%; aspect-ratio: 16/9; background: transparent; display:block; }
+    .gallery-main-wrap img { display: block; width: 100%; height: 100%; object-fit: contain; object-position: center; max-width: 100%; -webkit-user-drag: none; user-select: none; transition: opacity 220ms ease, transform 300ms ease; opacity: 1; }
+    .gallery-main-wrap:hover img { transform: scale(1.02); }
+    .gallery-nav { position:absolute; top:50%; transform:translateY(-50%); width:44px; height:44px; border-radius:8px; background: rgba(7,14,26,0.6); border:1px solid rgba(255,255,255,0.04); display:flex; align-items:center; justify-content:center; color:#eaf6ff; cursor:pointer; z-index:10; }
+    .gallery-nav.left{ left:12px; } .gallery-nav.right{ right:12px; }
+    .gallery-nav:hover{ background: rgba(11,132,255,0.12); }
+    .gallery-thumbs { display:flex; gap:10px; margin-top:12px; justify-content:center; align-items:center; flex-wrap: wrap; }
+    .gallery-thumb { flex: 0 0 100px; width: 100px; height: calc(100px * 3 / 4); border-radius:8px; overflow:hidden; cursor:pointer; border:2px solid transparent; transition: transform 160ms, border-color 160ms, box-shadow 160ms; background:var(--gallery-muted); }
+    .gallery-thumb img { width:100%; height:100%; object-fit:cover; display:block; }
+    .gallery-thumb:hover { transform: translateY(-4px); }
+    .gallery-thumb.active { border-color: var(--gallery-accent); box-shadow: 0 8px 22px rgba(11,132,255,0.12); }
+    .gallery-dots { display:flex; gap:8px; justify-content:center; margin-top:10px; }
+    .gallery-dot { width:9px; height:9px; border-radius:50%; background: rgba(255,255,255,0.12); }
+    .gallery-dot.active { background: var(--gallery-accent); transform:scale(1.2); }
+html, body {
+    max-width: 100%;
+    overflow-x: hidden;
+    position: relative;
+}
+    /* --- EKİP KARTLARI (Akışa geri döndü) --- */
+    .ekipler { 
+      text-align: center; 
+      color: white; 
+      font-size: 40px; 
+      font-weight: bold; 
+      font-family: monospace; 
+      z-index: 10; 
+      padding-top: 100px; 
+      margin-bottom: 50px; 
+    }
+
+    .ekipler-container {
+      position: relative; 
+      display: flex;
+      flex-wrap: wrap; 
+      justify-content: center; 
+      gap: 60px; 
+      width: 90%;
+      max-width: 1200px; 
+      margin: 0 auto 100px auto; 
+      padding: 30px 0;
+      z-index: 10;
+    }
+
+    .ekip-logo-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      padding: 25px 15px;
+      width: 260px;
+      background: rgba(255, 255, 255, 0.03); 
+      border-radius: 8px;
+      border: 1px solid rgba(121, 68, 154, 0.3); 
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .ekip-logo-card:hover {
+      transform: translateY(-8px); 
+      box-shadow: 0 0 25px rgba(255, 255, 255, 0.6), 0 0 40px rgba(255, 255, 255, 0.4), 0 8px 20px rgba(0, 0, 0, 0.5); 
+      background: rgba(255, 255, 255, 0.08); 
+    }
+
+    .ekip-logo-card img {
+      width: 150px; height: 150px; object-fit: contain; margin-bottom: 10px; border-radius: 50%;
+      background-color: #2c0b3f; padding: 10px; box-shadow: 0 0 10px rgba(255, 255, 255, 0.1); 
+    }
+
+    .ekip-logo-card h3 { font-size: 1.4rem; color: #ddd; margin: 5px 0 0 0; text-transform: uppercase; letter-spacing: 1px; }
+    
+    /* --- ATÖLYE GÖRSELİ (Akışa geri döndü) --- */
+    .atolye-gorseli-kapsayici {
+        width: 100vw; 
+        position: relative; 
+        left: 50%;
+        right: 50%;
+        margin-left: -50vw;
+        margin-right: -50vw;
+        padding: 50px 0; 
+        background-color: rgba(0, 0, 0, 0.4); 
+        margin-top: 50px; 
+        box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
+        z-index: 9; 
+    }
+
+    .atolye-panoroma {
+        width: 100%; 
+        height: 400px; 
+        object-fit: cover; 
+        display: block;
+        filter: brightness(0.7) grayscale(0.2); 
+    }
+    
+    /* --- ZAMAN ÇİZELGESİ (Akışa geri döndü) --- */
+    .timeline-section {
+      position: relative;
+      width: 90%;
+      max-width: 1000px; 
+      margin: 100px auto; 
+      text-align: center;
+      z-index: 10;
+      padding: 0;
+    }
+
+    .timeline-section h2 { font-size: 36px; color: #fff; margin-bottom: 70px; text-transform: uppercase; letter-spacing: 2px; }
+
+    .timeline-container { position: relative; margin: 0 auto; padding: 0 10px; }
+
+    /* ZAMAN ÇİZELGESİ DİKEY ÇİZGİ */
+    .timeline-container::after {
+      content: ''; position: absolute; width: 4px; background-color: rgba(255, 255, 255, 0.2);
+      top: 0; bottom: 0; left: 50%; margin-left: -2px;
+    }
+
+    /* ZAMAN ÇİZELGESİ KARTLARI */
+    .timeline-item {
+      padding: 10px 40px; position: relative; width: 50%; opacity: 0; 
+      transform: translateY(30px); transition: all 0.8s ease-out; margin-bottom: 50px;
+    }
+
+    .timeline-item.visible { opacity: 1; transform: translateY(0); }
+
+    .timeline-item:nth-child(even) { left: 50%; padding-left: 60px; }
+    .timeline-item:nth-child(odd) { left: 0; padding-right: 60px; }
+
+    .timeline-content {
+      padding: 20px 30px; background-color: rgba(255, 255, 255, 0.05); position: relative;
+      border-radius: 8px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+      border-left: 4px solid var(--gallery-accent, #0b84ff);
+    }
+
+    /* KART OKU (Üçgenler) */
+    .timeline-item:nth-child(odd) .timeline-content::after { content: " "; height: 0; position: absolute; top: 22px; right: -16px; width: 0; z-index: 1; border: medium solid rgba(255, 255, 255, 0.05); border-width: 10px 0 10px 16px; border-color: transparent transparent transparent rgba(255, 255, 255, 0.05); }
+    .timeline-item:nth-child(even) .timeline-content::after { content: " "; height: 0; position: absolute; top: 22px; left: -16px; width: 0; z-index: 1; border: medium solid rgba(255, 255, 255, 0.05); border-width: 10px 16px 10px 0; border-color: transparent rgba(255, 255, 255, 0.05) transparent transparent; }
+
+    /* ZAMAN ÇİZELGESİ NOKTASI (Marker) */
+    .timeline-item::after {
+      content: ''; position: absolute; width: 20px; height: 20px; right: -10px;
+      background-color: var(--gallery-accent, #0b84ff); border: 4px solid rgba(255, 255, 255, 0.9);
+      top: 15px; border-radius: 50%; z-index: 1; box-shadow: 0 0 15px var(--gallery-accent, #0b84ff); 
+    }
+    .timeline-item:nth-child(even)::after { left: -10px; }
+
+    .timeline-content h3 { font-size: 1.5rem; color: #fff; margin-top: 0; text-transform: uppercase; margin-bottom: 10px; }
+    .timeline-content p { font-size: 1rem; color: #ddd; }
+    .timeline-content .year { color: orange; font-size: 1.1rem; font-weight: bold; margin-bottom: 5px; display: block; }
+
+    /* FOOTER (Akışa geri döndü) */
+    footer.iletisim { 
+      background-color: #111; 
+      color: #ddd; 
+      text-align: center; 
+      padding: 40px 20px; 
+      z-index: 10; 
+      position: relative; 
+      width: 100%; 
+      margin-top: 50px;
+    }
+    
+    .iletisim h2 { margin-bottom: 20px; }
+    .iletisim p { margin-bottom: 10px; }
+
+    .harita { margin-top: 30px; }
+    /* Harita iframe'inin güvenli bir şekilde gösterilmesi */
+    .harita iframe { max-width: 100%; border-radius: 8px; }
+    
+    /* --- MOBİL DÜZENLEMELER --- */
+    /* 1. Tablet ve Küçük Laptoplar (1050px altı) */
+@media (max-width: 1050px) {
+    .team-page-container { max-width: 90%; margin-top: 30px; }
+    .about-block { flex-direction: column  !important; text-align: center;  }
+    .about-block .text { padding: 20px; max-width: 100%; }
+    
+    /* Takım kartlarını biraz küçültelim */
+    .member-grid { grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); }
+}
+
+/* 2. Telefonlar (768px altı) */
+.hamburger {
+      display: flex;
+      font-size: 26px;
+      color: white;
+      cursor: pointer;
+      padding-left: 290px;
+    }
+
+    .ikonlar {
+      position: absolute;
+      top: 75px;
+      right: 20px;
+      display: flex;
+      gap: 20px;
+      z-index: 1001;
+    }
+
+    .ikonlar a { font-size: 50px; color: aliceblue; }
+    .ikonlar a:hover { color: orange; }
+    .hamburger {
+    display: none !important;
+}
+
+    @media (max-width: 768px) {
+    /* 1. Navbar Düzenlemesi: Logo ve Hamburger yan yana */
+    ul.navbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 15px;
+        height: 70px;
+    }
+
+    .logo-container {
+        margin: 0;
+        width: auto;
+        order: 0;
+    }
+
+    .logo-wrapper {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    /* Hamburger Menü Butonu */
+    .hamburger {
+        display: block !important;
+        font-size: 24px;
+        color: white;
+        cursor: pointer;
+        padding: 10px;
+        order: 2; /* En sağa atar */
+    }
+
+    /* Menü Kapalıyken Linkleri Gizle */
+    ul.navbar li:not(.logo-container) {
+        display: none;
+        width: 100%;
+        text-align: center;
+        background: orange;
+    }
+
+    /* Menü Açıkken Linkleri Göster */
+    ul.navbar.open {
+        height: auto;
+    }
+
+    ul.navbar.open li:not(.logo-container) {
+        display: block;
+    }
+
+    /* 2. Sosyal Medya İkonları: Yazının üstünden kaldırıp logonun altına alıyoruz */
+    .ikonlar {
+        position: absolute !important;
+        top: 100px;     /* Haribo ile aynı hizada ama sağda */
+        right: 15px !important; /* Ekranın sağ kenarına 15px mesafe bırakır */
+        left: auto !important;  /* Sol taraftan gelen tüm değerleri iptal eder */
+        display: flex !important;
+        flex-direction: row;    /* Yan yana dizilmelerini sağlar */
+        gap: 15px;      /* Aralarındaki boşluk */
+        width: auto !important; /* Genişliği içeriği kadar yapar, ekranı kaplamaz */
+      
+    }
+
+    .ikonlar a {
+        font-size: 35px; /* Mobilde biraz küçülttük */
+      
+    }
+
+    /* 3. Hero Bölümü ve Metinler */
+    .hero-section {
+        min-height: auto !important;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    .baslik {
+        position: relative !important;
+        top: 0 !important;
+        left: 0 !important;
+        transform: none !important;
+        font-size: 26px;
+        margin-top: 20px;
+        width: 100%;
+    }
+
+    .aciklama {
+        position: relative !important;
+        top: 0 !important;
+        left: 0 !important;
+        transform: none !important;
+        width: 100% !important;
+        margin: 15px auto !important;
+        font-size: 15px;
+        padding: 0 10px;
+    }
+
+    /* Haribo (Logonun yanındaki süs) mobilde gizle veya küçült */
+  .haribo{
+      height: auto;
+      width: 125px;
+      left: 30px;
+  }
+
+    
+    /* Logo Mobilde En Üste Veya En Alta Gelsin */
+    .logo-container { 
+        margin: 10px 0; 
+        order: -1; /* Logoyu menünün en üstüne taşır */
+        width: 100%;
+        display: flex;
+        justify-content: center;
+    }
+  .logo-text {
+    color: white;
+    font-size: 20px; /* Mobilde sığması için 24px'den 20'ye çektik */
+    font-weight: bold;
+    font-family: monospace;
+    white-space: nowrap; /* Yazının asla alt satıra geçmemesini sağlar */
+}
+.logo-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    flex-wrap: nowrap; /* Elemanları tek satıra zorlar */
+    justify-content: flex-start;
+}
+
+    /* Başlıklar Mobilde Ekrana Sığsın */
+    h1 { font-size: 24px; letter-spacing: 2px; margin-bottom: 30px; }
+    h2 { font-size: 20px; }
+
+    /* Takım Üyeleri Mobilde 2'li Yan Yana Dursun */
+    .member-grid { 
+        grid-template-columns: 1fr 1fr; 
+        gap: 15px; 
+    }
+
+    .member-card img { width: 70px; height: 70px; }
+    .member-card h4 { font-size: 14px; }
+
+    /* Timeline (Zaman Çizelgesi) Varsa Mobilde Düz Çizgiye Dönüştürür */
+    .timeline-container::after { left: 20px; } 
+    .timeline-item { width: 100%; padding-left: 50px; padding-right: 10px; left: 0 !important; }
+    
+    /* Ekran dışına taşmayı önlemek için */
+    body { overflow-x: hidden; }
+    
+}
+
+  </style>
+</head>
+
+<body>
+  <img src="logo.png" alt="" class="haribo">
+
+  <ul class="navbar">
+    <li><a href="index.html">ANASAYFA</a></li>
+    <li><a href="duyurular.html">DUYURULAR</a></li>
+    
+    <li><a href="sponsorlar.html">SPONSORLAR</a>
+    <li><a href="#">YARIŞMALAR</a><ul class="dropdown"><li><a href="https://roverchallenge.eu/" target="_blank">EUROPEAN ROVER</a></li><li><a href="https://www.anatolianrover.space/" target="_blank">ANATOLIAN ROVER</a></li><li><a href="https://www.teknofest.org/tr/" target="_blank">TEKNOFEST</a></li></ul></li>
+    <li><a href="takımımız.html">TAKIMIMIZ</a></li>
+    <li><a href="#">HAKKIMIZDA</a><ul class="dropdown"><li><a href="bizeulas.html">BİZE ULAŞIN</a></li><li><a href="fotograflar.html">FOTOĞRAFLAR</a></li></ul></li>
+    <li class="logo-container"><div class="logo-wrapper"><img src="logo.png" alt="Logo" class="logo"><span class="logo-text">CENGAVER ROVER</span><div class="hamburger"> <i class="fa-solid fa-bars"></i></div></div></li>
+
+
+  </ul>
+
+  <div class="ikonlar"> 
+    <a href="https://www.youtube.com/channel/UC5x--GMBeLn7lESm5L6e1Kg" target="_blank"><i class="fa-brands fa-youtube"></i></a>
+    <a href="https://tr.linkedin.com/company/cengaverrover" target="_blank"><i class="fa-brands fa-linkedin"></i></a>
+    <a href="https://www.instagram.com/cengaver.rover?igsh=cjl2enZhYzBhZ3py" target="_blank"><i class="fa-brands fa-instagram"></i></a>
+  </div>
+
+  <main>
+    <section class="hero-section">
+      <div class="baslik">IZTECH CENGAVER ROVER
+        <h6 class="baslikalti">Mechanical Engineering</h6>
+      </div>
+      <p class="aciklama">
+        IZTECH CENGAVER ROVER takımı 2022 yılında faaliyetlerine başlamış ve kendi özel atölyesini açmış bir ROVER (Mars keşif aracı) takımıdır. Bünyesinde Makine Mühendisliği, Elektronik ve Haberleşme Mühendisliği, Kimya Mühendisliği ve Enerji Sistemleri Mühendisliği bölümlerinden öğrenciler bulundurmaktadır. Danışman olarak İYTE Makine Mühendisliği Profesörü Gökhan Kiper ile beraber çalışmaktadır ARC 23′ yarışmasında ülkemizi temsil etmiştir. Yurtdışı dahil birçok yarışmaya katılmayı planlayan bu takım 2023 senesi için yepyeni bir ROVER tasarımı ile yarışmalarda başarı hedeflemektedir. Aynı zamanda İYTE içinde bir yarışma ekibi kültürü oluşturmaya çalışmaktadır
+      </p>
+    </section>
+
+    <section class="about-section">
+      <div class="about-block right-image">
+        <div class="text">
+          <h1>Rover Nedir?</h1>
+          <p>Rover, bir gezegenin veya başka bir gök cisminin yüzeyi boyunca hareket etmesi için tasarlanmış uzay aracıdır...</p>
+        </div>
+        <img src="—Pngtree—detailed mars rover with orange_20092659.png" alt="Rover Görseli">
+      </div>
+    </section>
+    
+    <section class="gallery-section">
+      <div class="gallery-layout-flex">
+        <div class="gallery-column-left">
+          <div class="cengaver-gallery" aria-label="Cengaver 1.0 galeri">
+            <div class="gallery-card">
+              <div class="gallery-header"><div class="gallery-title">Cengaver 1.0</div></div>
+              <div class="gallery-main-wrap" id="cengaverMainWrap">
+                <img id="cengaverMainImg" src="04f31110-3fcd-4276-a968-18df673fca6b.jpg" alt="Cengaver 1.0 ana görsel">
+                <button class="gallery-nav left" id="cengaverPrev" aria-label="Önceki"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor"><path d="M15 18l-6-6 6-6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+                <button class="gallery-nav right" id="cengaverNext" aria-label="Sonraki"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor"><path d="M9 6l6 6-6 6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+              </div>
+              <div class="gallery-thumbs" id="cengaverThumbs">
+                <div class="gallery-thumb active" data-src="04f31110-3fcd-4276-a968-18df673fca6b.jpg"><img src="04f31110-3fcd-4276-a968-18df673fca6b.jpg" alt="Cengaver küçük 1"></div>
+                <div class="gallery-thumb" data-src="a623e9ad-2317-47b7-912b-6e071a987dc7.jpg"><img src="a623e9ad-2317-47b7-912b-6e071a987dc7.jpg" alt="Cengaver küçük 2"></div>
+                <div class="gallery-thumb" data-src="e9fdd30d-bf64-4fac-b230-a955fd88f4e5.jpg"><img src="e9fdd30d-bf64-4fac-b230-a955fd88f4e5.jpg" alt="Cengaver küçük 3"></div>
+              </div>
+              <div class="gallery-dots" id="cengaverDots" aria-hidden="true">
+                <div class="gallery-dot active"></div><div class="gallery-dot"></div><div class="gallery-dot"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="gallery-column-right">
+          <h1>Cengaver 1.0</h1>
+          <p>Bu, Cengaver 1.0 aracımızın ilk prototipidir. Atölyemizde uzun saatler süren çalışmalarımızın ve tutkumuzun bir ürünüdür.</p>
+          <p>Tasarım ve üretim sürecinde edindiğimiz tecrübeler, gelecek projelerimiz için bize ilham vermektedir.</p>
+          <ul>
+            <li>6 tekerlekli rocker-bogie süspansiyon</li>
+            <li>Alüminyum şasi</li>
+            <li>Otonom navigasyon kabiliyeti</li>
+            <li>Bilimsel analiz modülü</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <div class="ekipler">EKİPLER</div>
+    <div class="ekipler-container">
+      <div class="ekip-logo-card"><img src="resimler/1-removebg-preview.png" alt="Yazılım Ekibi Logosu"><h3>YAZILIM</h3></div>
+      <div class="ekip-logo-card"><img src="resimler/3-removebg-preview.png" alt="Elektronik Ekibi Logosu"><h3>ELEKTRONİK</h3></div>
+      <div class="ekip-logo-card"><img src="resimler/4-removebg-preview.png" alt="Mekanik Ekibi Logosu"><h3>MEKANİK</h3></div>
+      <div class="ekip-logo-card"><img src="resimler/2-removebg-preview.png" alt="Bilim Ekibi Logosu"><h3>BİLİM</h3></div>
+      <div class="ekip-logo-card"><img src="resimler/8-removebg-preview.png" alt="Sponsorluk ve Sosyal Medya Ekibi Logosu"><h3>SPONSORLUK & SOSYAL MEDYA</h3></div>
+    </div>
+    
+    <section class="atolye-gorseli-kapsayici">
+        <img 
+            src="cadffe97-5435-4d94-a74b-67e8fd66e689.jpg" 
+            alt="Panoramik Atölye Görseli"
+            class="atolye-panoroma"
+        >
+    </section>
+    
+    <section class="timeline-section">
+      <h2>YOLCULUĞUMUZ: BAŞARILAR VE HEDEFLER</h2>
+      <div class="timeline-container" id="roverTimeline">
+        <div class="timeline-item">
+          <div class="timeline-content">
+            <span class="year">2022</span>
+            <h3>KURULUŞ VE TEMELLER</h3>
+            <p>Iztech Cengaver Rover takımı, İYTE öğrencileri tarafından kuruldu. Mekanik, Elektronik ve Yazılım ekiplerinin temelleri atılarak ilk konsept tasarımlar geliştirildi.</p>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-content">
+            <span class="year">2023</span>
+            <h3>CENGAVER 1.0 VE ARC'23</h3>
+            <p>İlk prototipimiz olan **Cengaver 1.0** üretildi. Bu araçla Anatolian Rover Challenge (ARC '23) yarışmasına katılarak saha tecrübesi edindik ve ilk bilimsel görevleri tamamladık.</p>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-content">
+            <span class="year">2024 Mart</span>
+            <h3>CENGAVER 2.0 TASARIMI</h3>
+            <p>ARC '23 geri bildirimleriyle tamamen yeniden tasarlanmış, daha hafif, modüler ve yüksek otonomiye sahip **Cengaver 2.0**'ın son tasarım ve üretim aşamasına geçiş.</p>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-content">
+            <span class="year">2024 Yaz</span>
+            <h3>ERC '24 OTONOMİ TESTLERİ</h3>
+            <p>Avrupa'nın en prestijli yarışması olan European Rover Challenge (ERC '24) için kritik otonomi ve navigasyon sistemleri testlerinin tamamlanması hedeflenmektedir.</p>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-content">
+            <span class="year">2024 Eylül</span>
+            <h3>ANA HEDEF: ERC '24</h3>
+            <p>Polonya'da düzenlenecek olan **European Rover Challenge (ERC '24)** yarışmasında ülkemizi temsil etmek ve global alanda yüksek başarı elde etmek.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    <footer class="iletisim">
+      <h2>İLETİŞİM</h2>
+      <p>Adres: İzmir Yüksek Teknoloji Enstitüsü, Urla / İzmir</p>
+      <p>E-posta: iyteedu@cengaverrover</p>
+      <p>Telefon: +90 555 555 55 55</p>
+
+      <div class="harita">
+        <iframe
+          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1558.1182312602736!2d26.63468551121066!3d38.31888194451007!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x14bb92b0c3600f11%3A0x868b81372b07d667!2s%C4%B0zmir%20Y%C3%BCksek%20Teknoloji%20Enstit%C3%BCs%C3%BC!5e0!3m2!1str!2str!4v1709292800000!5m2!1str!2str"
+          width="100%" height="200" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade">
+        </iframe>
+      </div>
+    </footer>
+  </main>
+
+  <div class="gece">
+    <div class="yildiz"></div>
+    <div class="yildiz"></div>
+    <div class="yildiz"></div>
+    <div class="yildiz"></div>
+    <div class="yildiz"></div>
+    <div class="yildiz"></div>
+    <div class="yildiz"></div>
+  </div>
+
+  <div id="universe"></div>
+
+  <script>
+    // ZAMAN ÇİZELGESİ VE HAKKIMIZDA GÖRÜNÜRLÜK ANIMASYONLARI
+    document.addEventListener("DOMContentLoaded", () => {
+      const items = document.querySelectorAll('.timeline-item, .about-block');
+      const observer = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible'); 
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.3 }); 
+      items.forEach(item => observer.observe(item));
+    });
+
+    // YILDIZ JS KODLARI (Değişmedi)
+    (function () {
+      var starCount = 200;
+      var maxTime = 15;
+      var universe = document.getElementById("universe");
+      var width = window.innerWidth;
+      var height = window.innerHeight;
+
+      for (var i = 0; i < starCount; ++i) {
+        var ypos = Math.round(Math.random() * height);
+        var star = document.createElement("div");
+        var speed = 5000 * (Math.random() * maxTime + 1);
+        star.setAttribute("class", "star" + (3 - Math.floor(speed / 1000 / 8)));
+        star.style.left = Math.round(Math.random() * width) + "px";
+        star.style.top = ypos + "px";
+        star.style.zIndex = 0;
+        universe.appendChild(star);
+        star.animate(
+          [
+            { transform: "translate3d(" + width + "px, 0, 0)" },
+            { transform: "translate3d(-" + Math.random() * 256 + "px, 0, 0)" }
+          ],
+          {
+            delay: Math.random() * -speed,
+            duration: speed,
+            iterations: Infinity
+          }
+        );
+      }
+    })();
+
+    // GALERİ JS KODLARI (Değişmedi)
+    (function () {
+      const thumbs = Array.from(document.querySelectorAll('.gallery-thumb'));
+      const mainImg = document.getElementById('cengaverMainImg');
+      const prevBtn = document.getElementById('cengaverPrev');
+      const nextBtn = document.getElementById('cengaverNext');
+      const dots = Array.from(document.querySelectorAll('.gallery-dot'));
+
+      let idx = 0;
+      const AUTOPLAY_MS = 4500;
+      let autoTimer = null;
+
+      function setMainImageSafely(newSrc) {
+        if (!mainImg) return;
+        mainImg.style.opacity = '0';
+        const tmp = new Image();
+        tmp.decoding = 'async';
+        tmp.onload = () => {
+          mainImg.src = newSrc;
+          requestAnimationFrame(() => {
+            mainImg.style.transition = 'opacity 260ms ease';
+            mainImg.style.opacity = '1';
+          });
+        };
+        tmp.onerror = () => {
+          mainImg.style.opacity = '1';
+        };
+        tmp.src = newSrc;
+      }
+
+      function setActive(i, userTriggered = false) {
+        if (!thumbs.length) return;
+        i = (i + thumbs.length) % thumbs.length;
+        idx = i;
+        const src = thumbs[i].dataset.src || thumbs[i].querySelector('img')?.src;
+        if (src) setMainImageSafely(src);
+        thumbs.forEach(t => t.classList.remove('active'));
+        thumbs[i].classList.add('active');
+        dots.forEach(d => d.classList.remove('active'));
+        if (dots[i]) dots[i].classList.add('active');
+        if (userTriggered) resetAutoplay();
+      }
+
+      thumbs.forEach((t, i) => {
+        t.addEventListener('click', () => setActive(i, true));
+      });
+
+      prevBtn && prevBtn.addEventListener('click', () => setActive(idx - 1, true));
+      nextBtn && nextBtn.addEventListener('click', () => setActive(idx + 1, true));
+
+      window.addEventListener('keydown', e => {
+        if (e.key === 'ArrowLeft') setActive(idx - 1, true);
+        if (e.key === 'ArrowRight') setActive(idx + 1, true);
+      });
+
+      const mainWrap = document.getElementById('cengaverMainWrap');
+      let startX = 0, dragging = false;
+      if (mainWrap) {
+        mainWrap.addEventListener('pointerdown', e => {
+          if (e.target.closest('.gallery-nav')) return;
+          dragging = true; startX = e.clientX; mainWrap.setPointerCapture(e.pointerId);
+          stopAuto();
+        });
+        mainWrap.addEventListener('pointermove', e => { if (!dragging) return; });
+        mainWrap.addEventListener('pointerup', e => {
+          if (!dragging) return;
+          dragging = false;
+          const dx = e.clientX - startX;
+          const threshold = 50;
+          if (dx > threshold) setActive(idx - 1, true);
+          else if (dx < -threshold) setActive(idx + 1, true);
+          startAuto();
+        });
+        mainWrap.addEventListener('pointercancel', () => { dragging = false; startAuto(); });
+      }
+
+      function startAuto() { stopAuto(); autoTimer = setInterval(() => setActive(idx + 1, false), AUTOPLAY_MS); }
+      function stopAuto() { if (autoTimer) { clearInterval(autoTimer); autoTimer = null; } }
+      function resetAutoplay() { stopAuto(); startAuto(); }
+
+      window.addEventListener('load', () => {
+        setActive(0, false);
+        startAuto();
+      });
+
+      document.querySelectorAll('.gallery-card img').forEach(img => img.addEventListener('dragstart', e => e.preventDefault()));
+    })();
+    const hamburger = document.querySelector('.hamburger');
+  const navbar = document.querySelector('.navbar');
+
+  hamburger.addEventListener('click', () => {
+    navbar.classList.toggle('open');
+  });
+  </script>
+</body>
+</html>

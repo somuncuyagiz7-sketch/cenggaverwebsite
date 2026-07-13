@@ -1,0 +1,448 @@
+
+
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sponsorlarımız</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <style>
+        /* --- GENEL SIFIRLAMA --- */
+        *, *::before, *::after { box-sizing: border-box; }
+        * {
+            text-decoration: none;
+            padding: 0;
+            margin: 0;
+            font-family: monospace;
+        }
+
+        /* --- BODY VE ARKA PLAN (Anasayfa Kodundan) --- */
+         body {
+      width: 100%;
+      min-height: 100vh;
+      overflow-x: hidden;
+      background-color: hsl(252, 65%, 5%);
+      background-image:
+        radial-gradient(circle at top right, rgba(121, 68, 154, 0.13), transparent),
+        radial-gradient(circle at 20% 80%, rgba(41, 196, 255, 0.13), transparent);
+      background-attachment: fixed;
+      color: #ddd;
+    }
+
+        /* --- YILDIZ ANİMASYONU CSS (Anasayfa Kodundan) --- */
+        .gece { position: fixed; transform: rotateZ(10deg); top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
+        .yildiz { position: absolute; left: 0; top: 50%; height: 4px; width: 100px; background: linear-gradient(-45deg, aliceblue, rgba(255,255,255,0)); border-radius: 999px; filter: drop-shadow(0 0 6px aliceblue); animation: kuyruk 20s ease-in-out infinite, dusus 20s ease-in-out infinite; }
+        @keyframes kuyruk { 0% { width: 0px; } 30% { width: 100px; } 100% { width: 0; } }
+        @keyframes dusus { 0% { transform: translateX(0); } 100% { transform: translateX(1750px); } }
+        .yildiz::before, .yildiz::after { content: ' '; position: absolute; top: calc(50% - 2px); right: 0; height: 4px; width: 30px; background: linear-gradient(-45deg, rgba(0,0,255,0), aliceblue, rgba(0,0,255,0)); border-radius: 100%; transform: translate(50%) rotateZ(45deg); animation: parlama 7s ease ease-in-out infinite; }
+        .yildiz::after { transform: translateX(50%) rotateZ(-45deg); }
+        .star0 { height: 1px; width: 1px; opacity: 1; position: fixed; background: white; }
+        .star1 { height: 2px; width: 2px; border-radius: 50%; opacity: 1; position: fixed; background: white; }
+        .star2 { height: 3px; width: 3px; border-radius: 50%; opacity: 1; position: fixed; background: white; }
+        .star3 { height: 4px; width: 4px; border-radius: 50%; opacity: 1; position: fixed; background: white; }
+
+
+        /* --- NAVİGASYON STİLLERİ (Anasayfa Kodundan) --- */
+       ul.navbar { list-style: none; background-color: orange; display: flex; justify-content: center; align-items: center; padding: 0 20px; position: sticky; top: 0; z-index: 1002; flex-wrap: wrap; height: auto;}
+    ul.navbar li { display: inline-block; position: relative; }
+    ul.navbar li a { display: block; padding: 20px 25px; color: aliceblue; text-decoration: none; text-align: center; font-size: 20px; }
+    ul.navbar li ul.dropdown { top: 100%; background: orange; position: absolute; z-index: 1000; display: none; left: 0; min-width: 250px; }
+    ul.navbar li a:hover { background: orangered; }
+    ul.navbar li:hover ul.dropdown { display: block; }
+    .logo-container { margin-left: auto; }
+    .logo-wrapper { display: flex; align-items: center; gap: 10px; }
+    .logo { height: 50px; width: 70px; }
+    .logo-text { color: white; font-size: 24px; font-weight: bold; font-family: monospace; }
+    
+
+        /* --- SPONSOR SAYFASI İÇERİK STİLLERİ (Önceki Tasarımlardan) --- */
+        .sponsors-page {
+            max-width: 1200px;
+            margin: 60px auto 40px auto; /* Menüden sonra boşluk bırakır */
+            padding: 0 20px;
+            z-index: 10;
+            position: relative; /* Yıldızların üstünde kalması için */
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 3em;
+            color: #ffffff;
+            margin-bottom: 60px;
+            text-transform: uppercase;
+            letter-spacing: 5px;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 20px;
+            /* Ana sayfa başlık gradient'i: */
+            background: aliceblue;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        h2 {
+            font-size: 2.2em;
+            margin-top: 50px;
+            margin-bottom: 25px;
+            padding-left: 15px;
+            border-left: 5px solid;
+            transition: all 0.3s ease;
+            color: #e6edf3;
+        }
+
+        /* Kategori Başlık Renkleri */
+        #silver-sponsors h2 { border-color: #c0c0c0; color: #c0c0c0; } 
+        #bronze-sponsors h2 { border-color: #cd7f32; color: #cd7f32; } 
+        #communication-sponsors h2 { border-color: #0b84ff; color: #0b84ff; } 
+        #supporters h2 { border-color: #58a6ff; color: #58a6ff; } 
+
+        .sponsor-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 25px;
+            padding: 10px 0;
+        }
+
+        .sponsor-card {
+            background-color: rgba(22, 27, 34, 0.7); /* Şeffaflık eklendi */
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 120px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(4px); /* Arka planı hafifçe bulanıklaştırır */
+        }
+
+        .sponsor-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 130, 255, 0.3);
+        }
+
+        .sponsor-card img {
+            max-width: 100%;
+            max-height: 80px;
+            width: auto;
+            height: auto;
+            object-fit: contain;
+            filter: grayscale(100%);
+            transition: filter 0.3s ease;
+        }
+
+        .sponsor-card:hover img {
+            filter: grayscale(0%);
+        }
+        
+        #silver-sponsors .sponsor-card { min-height: 150px; }
+        #silver-sponsors .sponsor-card img { max-height: 120px; }
+.hamburger{display: none;}
+        /* --- RESPONSIVE AYARLAR --- */
+       @media (max-width: 1050px) {
+    .team-page-container { max-width: 90%; margin-top: 30px; }
+    .about-block { flex-direction: column  !important; text-align: center;  }
+    .about-block .text { padding: 20px; max-width: 100%; }
+    
+    /* Takım kartlarını biraz küçültelim */
+    .member-grid { grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); }
+}
+
+/* 2. Telefonlar (768px altı) */
+.hamburger {
+      display: flex;
+      font-size: 26px;
+      color: white;
+      cursor: pointer;
+      padding-left: 290px;
+    }
+
+    .ikonlar {
+      position: absolute;
+      top: 75px;
+      right: 20px;
+      display: flex;
+      gap: 20px;
+      z-index: 1001;
+    }
+
+    .ikonlar a { font-size: 50px; color: aliceblue; }
+    .ikonlar a:hover { color: orange; }
+    .hamburger {
+    display: none !important;
+}
+
+    @media (max-width: 768px) {
+    /* 1. Navbar Düzenlemesi: Logo ve Hamburger yan yana */
+    ul.navbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 15px;
+        height: 70px;
+    }
+
+    .logo-container {
+        margin: 0;
+        width: auto;
+        order: 0;
+    }
+
+    .logo-wrapper {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    /* Hamburger Menü Butonu */
+    .hamburger {
+        display: block !important;
+        font-size: 24px;
+        color: white;
+        cursor: pointer;
+        padding: 10px;
+        order: 2; /* En sağa atar */
+    }
+
+    /* Menü Kapalıyken Linkleri Gizle */
+    ul.navbar li:not(.logo-container) {
+        display: none;
+        width: 100%;
+        text-align: center;
+        background: orange;
+    }
+
+    /* Menü Açıkken Linkleri Göster */
+    ul.navbar.open {
+        height: auto;
+    }
+
+    ul.navbar.open li:not(.logo-container) {
+        display: block;
+    }
+
+    /* 2. Sosyal Medya İkonları: Yazının üstünden kaldırıp logonun altına alıyoruz */
+    .ikonlar {
+        position: absolute !important;
+        top: 100px;     /* Haribo ile aynı hizada ama sağda */
+        right: 15px !important; /* Ekranın sağ kenarına 15px mesafe bırakır */
+        left: auto !important;  /* Sol taraftan gelen tüm değerleri iptal eder */
+        display: flex !important;
+        flex-direction: row;    /* Yan yana dizilmelerini sağlar */
+        gap: 15px;      /* Aralarındaki boşluk */
+        width: auto !important; /* Genişliği içeriği kadar yapar, ekranı kaplamaz */
+      
+    }
+
+    .ikonlar a {
+        font-size: 35px; /* Mobilde biraz küçülttük */
+      
+    }
+
+    /* 3. Hero Bölümü ve Metinler */
+    .hero-section {
+        min-height: auto !important;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    .baslik {
+        position: relative !important;
+        top: 0 !important;
+        left: 0 !important;
+        transform: none !important;
+        font-size: 26px;
+        margin-top: 20px;
+        width: 100%;
+    }
+
+    .aciklama {
+        position: relative !important;
+        top: 0 !important;
+        left: 0 !important;
+        transform: none !important;
+        width: 100% !important;
+        margin: 15px auto !important;
+        font-size: 15px;
+        padding: 0 10px;
+    }
+
+    /* Haribo (Logonun yanındaki süs) mobilde gizle veya küçült */
+  .haribo{
+      height: auto;
+      width: 125px;
+      left: 30px;
+  }
+
+    
+    /* Logo Mobilde En Üste Veya En Alta Gelsin */
+    .logo-container { 
+        margin: 10px 0; 
+        order: -1; /* Logoyu menünün en üstüne taşır */
+        width: 100%;
+        display: flex;
+        justify-content: center;
+    }
+  .logo-text {
+    color: white;
+    font-size: 20px; /* Mobilde sığması için 24px'den 20'ye çektik */
+    font-weight: bold;
+    font-family: monospace;
+    white-space: nowrap; /* Yazının asla alt satıra geçmemesini sağlar */
+}
+.logo-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    flex-wrap: nowrap; /* Elemanları tek satıra zorlar */
+    justify-content: flex-start;
+}
+
+    /* Başlıklar Mobilde Ekrana Sığsın */
+    h1 { font-size: 24px; letter-spacing: 2px; margin-bottom: 30px; }
+    h2 { font-size: 20px; }
+
+    /* Takım Üyeleri Mobilde 2'li Yan Yana Dursun */
+    .member-grid { 
+        grid-template-columns: 1fr 1fr; 
+        gap: 15px; 
+    }
+
+    .member-card img { width: 70px; height: 70px; }
+    .member-card h4 { font-size: 14px; }
+
+    /* Timeline (Zaman Çizelgesi) Varsa Mobilde Düz Çizgiye Dönüştürür */
+    .timeline-container::after { left: 20px; } 
+    .timeline-item { width: 100%; padding-left: 50px; padding-right: 10px; left: 0 !important; }
+    
+    /* Ekran dışına taşmayı önlemek için */
+    body { overflow-x: hidden; }
+    
+}
+    </style>
+</head>
+<body>
+
+    <div class="gece">
+        <div class="yildiz" style="top: 20%;"></div>
+        <div class="yildiz" style="top: 45%; animation-delay: 5s;"></div>
+        <div class="yildiz" style="top: 70%; animation-delay: 10s;"></div>
+    </div>
+    <div id="universe"></div>
+   <ul class="navbar">
+    <li><a href="index.html">ANASAYFA</a></li>
+    <li><a href="duyurular.html">DUYURULAR</a></li>
+    
+    <li><a href="sponsorlar.html">SPONSORLAR</a>
+    <li><a href="#">YARIŞMALAR</a><ul class="dropdown"><li><a href="https://roverchallenge.eu/" target="_blank">EUROPEAN ROVER</a></li><li><a href="https://www.anatolianrover.space/" target="_blank">ANATOLIAN ROVER</a></li><li><a href="https://www.teknofest.org/tr/" target="_blank">TEKNOFEST</a></li></ul></li>
+    <li><a href="takımımız.html">TAKIMIMIZ</a></li>
+    <li><a href="#">HAKKIMIZDA</a><ul class="dropdown"><li><a href="bizeulas.html">BİZE ULAŞIN</a></li><li><a href="fotograflar.html">FOTOĞRAFLAR</a></li></ul></li>
+    <li class="logo-container"><div class="logo-wrapper"><img src="logo.png" alt="Logo" class="logo"><span class="logo-text">CENGAVER ROVER</span><div class="hamburger"> <i class="fa-solid fa-bars"></i></div></div></li>
+
+
+  </ul>
+   <main class="sponsors-page">
+        <h1>SPONSORLARIMIZ</h1>
+        
+        <section id="silver-sponsors">
+            <h2>🥇 Silver Sponsorlar</h2>
+            <div class="sponsor-grid">
+                <div class="sponsor-card">
+                    <img src="silver1.png" alt="Silver Sponsor Logo 1">
+                </div>
+                <div class="sponsor-card">
+                    <img src="silver2.jpg" alt="Silver Sponsor Logo 2">
+                </div>
+                <div class="sponsor-card">
+                    <img src="silver3.png" alt="Silver Sponsor Logo 3">
+                </div>
+            </div>
+        </section>
+
+        <section id="bronze-sponsors">
+            <h2>🥉 Bronze Sponsorlar</h2>
+            <div class="sponsor-grid">
+                <div class="sponsor-card">
+                    <img src="bronz1.jpg" alt="Bronze Sponsor Logo 1">
+                </div>
+                <div class="sponsor-card">
+                    <img src="bronz2.png" alt="Bronze Sponsor Logo 2">
+                </div>
+            </div>
+        </section>
+
+        <section id="communication-sponsors">
+            <h2>📞 Communication Sponsorları</h2>
+            <div class="sponsor-grid">
+                <div class="sponsor-card">
+                    <img src="tenda-logo.png" alt="Communication Sponsor Logo 1">
+                </div>
+            </div>
+        </section>
+
+        <section id="supporters">
+            <h2>🤝 Destekçilerimiz</h2>
+            <div class="sponsor-grid">
+                <div class="sponsor-card">
+                    <img src="d1.png" alt="Destekçi Logo 1">
+                </div>
+                <div class="sponsor-card">
+                    <img src="d2.png" alt="Destekçi Logo 2">
+                </div>
+                <div class="sponsor-card">
+                    <img src="d3.jpg" alt="Destekçi Logo 3">
+                </div>
+            </div>
+        </section>
+    </main>
+    <script>
+        (function () {
+            var starCount = 200;
+            var maxTime = 15;
+            var universe = document.getElementById("universe");
+            var w = window;
+            var d = document;
+            var e = d.documentElement;
+            var g = d.getElementsByTagName("body")[0];
+            var width = w.innerWidth || e.clientWidth || g.clientWidth;
+            var height = w.innerHeight || e.clientHeight || g.clientHeight;
+
+            for (var i = 0; i < starCount; ++i) {
+                var ypos = Math.round(Math.random() * height);
+                var star = document.createElement("div");
+                var speed = 5000 * (Math.random() * maxTime + 1);
+                star.setAttribute("class", "star" + (3 - Math.floor(speed / 1000 / 8)));
+                star.style.backgroundColor = "white";
+                star.style.left = Math.round(Math.random() * width) + "px";
+                star.style.top = ypos + "px";
+                star.style.zIndex = 0;
+                universe.appendChild(star);
+                star.animate(
+                    [
+                        { transform: "translate3d(" + width + "px, 0, 0)" },
+                        { transform: "translate3d(-" + Math.random() * 256 + "px, 0, 0)" }
+                    ],
+                    {
+                        delay: Math.random() * -speed,
+                        duration: speed,
+                        iterations: 1000
+                    }
+                );
+            }
+        })();
+            const hamburger = document.querySelector('.hamburger');
+  const navbar = document.querySelector('.navbar');
+
+  hamburger.addEventListener('click', () => {
+    navbar.classList.toggle('open');
+  });
+    </script>
+</body>
+</html>

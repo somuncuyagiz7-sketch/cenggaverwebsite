@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bize Ulasın</title>
+     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+body {
+      width: 100%;
+      min-height: 100vh;
+      overflow-x: hidden;
+      overflow-y: auto;
+      background-color: hsl(252, 65%, 5%);
+      background-image: radial-gradient(circle at top right, rgba(121, 68, 154, 0.13), transparent),
+                        radial-gradient(circle at 20% 80%, rgba(41, 196, 255, 0.13), transparent);
+      background-attachment: fixed;
+      font-family: monospace;
+    }
+
+
+.contact-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  max-width: 1000px;
+  margin: 60px auto;
+  box-shadow: 0 0 20px rgba(0,0,0,0.1);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.contact-form {
+  flex: 1 1 50%;
+  background: #fff;
+  padding: 40px;
+}
+
+.gradient-text {
+  font-size: 28px;
+  font-weight: bold;
+  background: linear-gradient(to right, #ff6a00, #ee0979, #8e2de2);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 30px;
+}
+
+.contact-form input,
+.contact-form textarea {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 20px;
+  border: none;
+  border-bottom: 1px solid #000;
+  font-size: 16px;
+  background: transparent;
+}
+
+.contact-form button {
+  padding: 12px 20px;
+  border: 1px solid #000;
+  background: transparent;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+.contact-form button:hover {
+  background: #000;
+  color: #fff;
+}
+
+.contact-info {
+  flex: 1 1 50%;
+  background: #2c2c2c;
+  color: #fff;
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.info-block {
+  margin-bottom: 30px;
+}
+
+.info-block h3 {
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+
+.info-block p {
+  font-size: 16px;
+  line-height: 1.6;
+}
+.star0 {
+      height: 1px;
+      width: 1px;
+      opacity: 1;
+      position: fixed;
+    }
+
+    .star1 {
+      height: 2px;
+      width: 2px;
+      border-radius: 50%;
+      opacity: 1;
+      position: fixed;
+    }
+
+    .star2 {
+      height: 3px;
+      width: 3px;
+      border-radius: 50%;
+      opacity: 1;
+      position: fixed;
+    }
+
+    .star3 {
+      height: 4px;
+      width: 4px;
+      border-radius: 50%;
+      opacity: 1;
+      position: fixed;
+    }
+    #universe {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  pointer-events: none;
+}
+* {
+      text-decoration: none;
+      padding: 0;
+      margin: 0;
+      font-family: monospace;
+    }
+
+   ul.navbar { list-style: none; background-color: orange; display: flex; justify-content: center; align-items: center; padding: 0 20px; position: sticky; top: 0; z-index: 1002; flex-wrap: wrap; height: auto;}
+    ul.navbar li { display: inline-block; position: relative; }
+    ul.navbar li a { display: block; padding: 20px 25px; color: aliceblue; text-decoration: none; text-align: center; font-size: 20px; }
+    ul.navbar li ul.dropdown { top: 100%; background: orange; position: absolute; z-index: 1000; display: none; left: 0; min-width: 250px; }
+    ul.navbar li a:hover { background: orangered; }
+    ul.navbar li:hover ul.dropdown { display: block; }
+    .logo-container { margin-left: auto; }
+    .logo-wrapper { display: flex; align-items: center; gap: 10px; }
+    .logo { height: 50px; width: 70px; }
+    .logo-text { color: white; font-size: 24px; font-weight: bold; font-family: monospace; }
+    
+/* --- MOBİL UYUMLULUK AYARLARI --- */
+
+.hamburger{display: none;}
+    /* 1. Menü (Navbar) Düzenlemesi */
+   @media (max-width: 1050px) {
+    .team-page-container { max-width: 90%; margin-top: 30px; }
+    .about-block { flex-direction: column  !important; text-align: center;  }
+    .about-block .text { padding: 20px; max-width: 100%; }
+    
+    /* Takım kartlarını biraz küçültelim */
+    .member-grid { grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); }
+
+
+/* 2. Telefonlar (768px altı) */
+.hamburger {
+      display: flex;
+      font-size: 26px;
+      color: white;
+      cursor: pointer;
+      padding-left: 290px;
+    }
+
+    .ikonlar {
+      position: absolute;
+      top: 75px;
+      right: 20px;
+      display: flex;
+      gap: 20px;
+      z-index: 1001;
+    }
+
+    .ikonlar a { font-size: 50px; color: aliceblue; }
+    .ikonlar a:hover { color: orange; }
+    .hamburger {
+    display: none !important;
+}
+}
+    @media (max-width: 768px) {
+    /* 1. Navbar Düzenlemesi: Logo ve Hamburger yan yana */
+    ul.navbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 15px;
+        height: 70px;
+    }
+
+    .logo-container {
+        margin: 0;
+        width: auto;
+        order: 0;
+    }
+
+    .logo-wrapper {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    /* Hamburger Menü Butonu */
+    .hamburger {
+        display: block !important;
+        font-size: 24px;
+        color: white;
+        cursor: pointer;
+        padding: 10px;
+        order: 2; /* En sağa atar */
+    }
+
+    /* Menü Kapalıyken Linkleri Gizle */
+    ul.navbar li:not(.logo-container) {
+        display: none;
+        width: 100%;
+        text-align: center;
+        background: orange;
+    }
+
+    /* Menü Açıkken Linkleri Göster */
+    ul.navbar.open {
+        height: auto;
+    }
+
+    ul.navbar.open li:not(.logo-container) {
+        display: block;
+    }
+
+    /* 2. Sosyal Medya İkonları: Yazının üstünden kaldırıp logonun altına alıyoruz */
+    .ikonlar {
+        position: absolute !important;
+        top: 100px;     /* Haribo ile aynı hizada ama sağda */
+        right: 15px !important; /* Ekranın sağ kenarına 15px mesafe bırakır */
+        left: auto !important;  /* Sol taraftan gelen tüm değerleri iptal eder */
+        display: flex !important;
+        flex-direction: row;    /* Yan yana dizilmelerini sağlar */
+        gap: 15px;      /* Aralarındaki boşluk */
+        width: auto !important; /* Genişliği içeriği kadar yapar, ekranı kaplamaz */
+      
+    }
+
+    .ikonlar a {
+        font-size: 35px; /* Mobilde biraz küçülttük */
+      
+    }
+
+    /* 3. Hero Bölümü ve Metinler */
+    .hero-section {
+        min-height: auto !important;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    .baslik {
+        position: relative !important;
+        top: 0 !important;
+        left: 0 !important;
+        transform: none !important;
+        font-size: 26px;
+        margin-top: 20px;
+        width: 100%;
+    }
+
+    .aciklama {
+        position: relative !important;
+        top: 0 !important;
+        left: 0 !important;
+        transform: none !important;
+        width: 100% !important;
+        margin: 15px auto !important;
+        font-size: 15px;
+        padding: 0 10px;
+    }
+
+    /* Haribo (Logonun yanındaki süs) mobilde gizle veya küçült */
+  .haribo{
+      height: auto;
+      width: 125px;
+      left: 30px;
+  }
+
+    
+    /* Logo Mobilde En Üste Veya En Alta Gelsin */
+    .logo-container { 
+        margin: 10px 0; 
+        order: -1; /* Logoyu menünün en üstüne taşır */
+        width: 100%;
+        display: flex;
+        justify-content: center;
+    }
+  .logo-text {
+    color: white;
+    font-size: 20px; /* Mobilde sığması için 24px'den 20'ye çektik */
+    font-weight: bold;
+    font-family: monospace;
+    white-space: nowrap; /* Yazının asla alt satıra geçmemesini sağlar */
+}
+.logo-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    flex-wrap: nowrap; /* Elemanları tek satıra zorlar */
+    justify-content: flex-start;
+}
+
+    /* Başlıklar Mobilde Ekrana Sığsın */
+    h1 { font-size: 24px; letter-spacing: 2px; margin-bottom: 30px; }
+    h2 { font-size: 20px; }
+
+    /* Takım Üyeleri Mobilde 2'li Yan Yana Dursun */
+    .member-grid { 
+        grid-template-columns: 1fr 1fr; 
+        gap: 15px; 
+    }
+
+    .member-card img { width: 70px; height: 70px; }
+    .member-card h4 { font-size: 14px; }
+
+    /* Timeline (Zaman Çizelgesi) Varsa Mobilde Düz Çizgiye Dönüştürür */
+    .timeline-container::after { left: 20px; } 
+    .timeline-item { width: 100%; padding-left: 50px; padding-right: 10px; left: 0 !important; }
+    
+    /* Ekran dışına taşmayı önlemek için */
+    body { overflow-x: hidden; }
+    
+}
+
+    /* 2. İletişim Formu ve Bilgi Kutusu */
+    .contact-wrapper {
+        flex-direction: column; /* Yan yana duranları alt alta getirir */
+        margin: 20px;
+        width: auto;
+    }
+
+    .contact-form, .contact-info {
+        flex: 1 1 100%;
+        padding: 30px 20px; /* Mobilde iç boşluğu biraz azalttık */
+    }
+
+    .gradient-text {
+        font-size: 24px;
+        text-align: center;
+    }
+
+    /* 3. Yıldız Animasyonu (Hızlanma/Kasma Önleme) */
+    #universe {
+        opacity: 0.6; /* Mobilde göz yormasın */
+    }
+
+    /* Form elemanlarının mobilde daha kolay tıklanması için */
+    .contact-form input, 
+    .contact-form textarea, 
+    .contact-form button {
+        font-size: 16px; /* Zoom yapmasını engeller */
+    }
+
+
+
+
+
+    </style>
+
+
+
+</head>
+
+
+<body>
+   <ul class="navbar">
+    <li><a href="index.html">ANASAYFA</a></li>
+    <li><a href="duyurular.html">DUYURULAR</a></li>
+    
+    <li><a href="sponsorlar.html">SPONSORLAR</a>
+    <li><a href="#">YARIŞMALAR</a><ul class="dropdown"><li><a href="https://roverchallenge.eu/" target="_blank">EUROPEAN ROVER</a></li><li><a href="https://www.anatolianrover.space/" target="_blank">ANATOLIAN ROVER</a></li><li><a href="https://www.teknofest.org/tr/" target="_blank">TEKNOFEST</a></li></ul></li>
+    <li><a href="takımımız.html">TAKIMIMIZ</a></li>
+    <li><a href="#">HAKKIMIZDA</a><ul class="dropdown"><li><a href="bizeulas.html">BİZE ULAŞIN</a></li><li><a href="fotograflar.html">FOTOĞRAFLAR</a></li></ul></li>
+    <li class="logo-container"><div class="logo-wrapper"><img src="logo.png" alt="Logo" class="logo"><span class="logo-text">CENGAVER ROVER</span><div class="hamburger"> <i class="fa-solid fa-bars"></i></div></div></li>
+
+
+  </ul>
+<section class="contact-wrapper">
+  <div class="contact-form">
+    <h2 class="gradient-text">Bize Ulaşın</h2>
+   <form id="siyav" name="iletisim-formu" method="POST" data-netlify="true">
+  <input type="hidden" name="form-name" value="iletisim-formu" />
+
+  <input type="text" name="ad-soyad" placeholder="Ad-Soyad" required />
+
+  <input type="email" name="eposta" placeholder="Geçerli e-posta adresi" required />
+
+  <textarea name="mesaj" placeholder="Mesajınızı girin" required></textarea>
+
+  <button type="submit">GÖNDER</button>
+</form>
+  </div>
+
+  <div class="contact-info">
+    <div class="info-block">
+      <h3>📞 BİZİ ARAYIN</h3>
+      <p>+90 (555) 555-555<br>cengaverrover@iyte.edu.tr</p>
+    </div>
+    <div class="info-block">
+      <h3>📍KONUM </h3>
+      <p>Gülbahçe/İzmir<br>İYTE Yerleşkesi Makine Mühendisliği Binası Zemin kat</p>
+    </div>
+    <div class="info-block">
+      <h3>🕒 ÇALIŞMA SAATLERİ</h3>
+      <p>Pazartesi - Cuma ...... 10:00 - 20:00<br>Cumartesi, Pazar ...... Kapalı</p>
+    </div>
+  </div>
+</section>
+
+
+<div id="universe"></div>
+
+    
+</body>
+<script>
+  var layerCount = 20;
+  var starCount = 200;
+  var maxTime = 15;
+  var universe = document.getElementById("universe");
+  var w = window;
+  var d = document;
+  var e = d.documentElement;
+  var g = d.getElementsByTagName("body")[0];
+  var width = w.innerWidth || e.clientWidth || g.clientWidth;
+  var height = w.innerHeight || e.clientHeight || g.clientHeight;
+
+  for (var i = 0; i < starCount; ++i) {
+    var ypos = Math.round(Math.random() * height);
+    var star = document.createElement("div");
+    var speed = 5000 * (Math.random() * maxTime + 1);
+    star.setAttribute("class", "star" + (3 - Math.floor(speed / 1000 / 8)));
+    star.style.backgroundColor = "white";
+
+    universe.appendChild(star);
+    star.animate(
+      [
+        { transform: "translate3d(" + width + "px, " + ypos + "px, 0)" },
+        { transform: "translate3d(-" + Math.random() * 256 + "px, " + ypos + "px, 0)" }
+      ],
+      {
+        delay: Math.random() * -speed,
+        duration: speed,
+        iterations: 1000
+      }
+    );
+  }
+
+  const images = document.querySelectorAll('.fade-in');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.1 });
+
+  images.forEach(img => observer.observe(img));
+              const hamburger = document.querySelector('.hamburger');
+  const navbar = document.querySelector('.navbar');
+
+  hamburger.addEventListener('click', () => {
+    navbar.classList.toggle('open');
+  });
+
+</script>
+</html>
